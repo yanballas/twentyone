@@ -1,8 +1,10 @@
 import * as PIXI from "pixi.js";
 
-import { appConfig } from "../utils/appConfig";
+import { appConfig } from "../utils/configs.ts";
 import { resize } from "../utils/resize";
-import { RegularGame } from "./stages/regular.game";
+
+import BootGame from "./stages/boot.game.ts";
+import RegularGame from "./stages/regular.game.ts";
 
 declare global {
     var __PIXI_APP__: App; // eslint-disable-line no-var
@@ -10,13 +12,15 @@ declare global {
 
 export class App extends PIXI.Application {
     protected rootContainer: HTMLDivElement;
-    declare protected _regularGame: RegularGame;
+    declare protected _bootScene: BootGame;
+    declare protected _regularScene: RegularGame | null;
     public readonly ROOT_SCENE_NAME: string = "app";
 
     constructor() {
         super(appConfig);
         this.rootContainer = document.getElementById("app") as HTMLDivElement;
         this.stage.name = this.ROOT_SCENE_NAME;
+        this._regularScene = null;
 
         this.rootContainer.appendChild(this.view);
 
@@ -27,8 +31,20 @@ export class App extends PIXI.Application {
     protected init(): void {
         globalThis.__PIXI_APP__ = this;
 
-        this._regularGame = new RegularGame();
-        this.stage.addChild(this._regularGame);
+        try {
+            this._bootScene = new BootGame(this);
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                throw e;
+            }
+            throw new Error('error initial bootScene'); // Для неизвестных типов ошибок
+        }
+    }
+
+    public startGame(): void {
+        this._regularScene = new RegularGame();
+        this.stage.addChild(this._regularScene);
+        console.log("changeScene");
     }
 
     protected setupEventListeners(): void {
