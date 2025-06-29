@@ -3,9 +3,15 @@ export interface WindowSize {
   height: number;
 }
 
+export interface IAssetResource {
+  url: string;
+  name: string;
+}
+
+export interface IAssetResources {
+  [key: string]: IAssetResource;
+}
+
 export interface IConfigBoot {
-  background: {
-    url: string;
-    name: string;
-  };
+  assets: IAssetResources;
 }

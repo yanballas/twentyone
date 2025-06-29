@@ -1,21 +1,32 @@
 import * as PIXI from "pixi.js";
-import { BASE_HEIGHT, BASE_WIDTH } from "../../utils/constants";
+import { BASE_HEIGHT, BASE_WIDTH, getWindowSize } from "../../utils/constants";
+import AssetLoader from "../../utils/assets";
 
-export default class RegularGame extends PIXI.Container {
+import type { App } from "../app";
 
-  constructor() {
-    super();
+import SharedGame from "./shared.game";
+
+export default class RegularGame extends SharedGame {
+  protected _app: App;
+  protected _background: PIXI.Sprite | null = null;
+
+  constructor(app: App) {
+    super(app);
+    this._app = app;
 
     this.create();
-    this.setLocation();
   }
 
   protected create(): void {
-    console.log("RegularGame created");
-  }
+    this._background = new PIXI.Sprite(
+      AssetLoader.getInstance().getTexture("backgroundBoot"),
+    );
+    this._background.anchor.set(0.5);
+    this._background.position.set(BASE_WIDTH / 2, BASE_HEIGHT / 2);
+    this._background.width = BASE_WIDTH;
+    this._background.height = BASE_HEIGHT;
 
-  protected setLocation(): void {
-    this.position.set(BASE_WIDTH / 2, BASE_HEIGHT / 2);
-    this.pivot.set(this.width / 2, this.height / 2);
+    this.addChild(this._background);
+    console.log("RegularGame created");
   }
 }
