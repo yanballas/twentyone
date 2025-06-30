@@ -9,5 +9,11 @@ export default class SharedGame extends PIXI.Container {
     super();
     this._app = app;
     this._background = null;
+    this.draw();
+  }
+
+  public draw(): void {
+    this.scale.set(0.5);
+    this.pivot.set(0.5);
   }
 }

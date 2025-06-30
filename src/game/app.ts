@@ -2,7 +2,7 @@ import * as PIXI from "pixi.js";
 
 import { appConfig } from "../utils/configs.ts";
 
-import BootGame from "./stages/boot.game.ts";
+import AssetLoader from "./stages/assets.game.ts";
 import RegularGame from "./stages/regular.game.ts";
 import { BASE_HEIGHT, getWindowSize, BASE_WIDTH } from "../utils/constants.ts";
 
@@ -12,7 +12,7 @@ declare global {
 
 export class App extends PIXI.Application {
   protected rootContainer: HTMLDivElement;
-  declare protected _bootScene: BootGame;
+  declare protected _assetsLoader: AssetLoader;
   declare protected _regularScene: RegularGame | null;
   public readonly ROOT_SCENE_NAME: string = "app";
 
@@ -27,13 +27,23 @@ export class App extends PIXI.Application {
     this.init();
   }
 
+  protected callDrawRecursive(node: any): void {
+    if (typeof node.draw === "function") {
+      node.draw();
+    }
+    if (Array.isArray(node.children)) {
+      for (const child of node.children) {
+        this.callDrawRecursive(child);
+      }
+    }
+  }
+
   protected resizeGame(): void {
     const { width: windowWidth, height: windowHeight } = getWindowSize();
 
     const scaleX = windowWidth / BASE_WIDTH;
     const scaleY = windowHeight / BASE_HEIGHT;
-    const scale =
-      windowWidth >= 1024 ? Math.max(scaleX, scaleY) : Math.min(scaleX, scaleY);
+    const scale = Math.max(scaleX, scaleY);
 
     this.stage.scale.set(scale);
 
@@ -44,21 +54,26 @@ export class App extends PIXI.Application {
       (windowWidth - stageWidth) / 2,
       (windowHeight - stageHeight) / 2,
     );
+
+    this.callDrawRecursive(this.stage);
   }
 
-  protected init(): void {
+  protected async init(): Promise<void> {
     globalThis.__PIXI_APP__ = this;
 
     window.addEventListener("resize", () => this.resizeGame());
     this.resizeGame();
 
     try {
-      this._bootScene = new BootGame(this);
+      this._assetsLoader = new AssetLoader();
+      await this._assetsLoader.init();
+      console.log("assetsLoader done");
+      this.startGame();
     } catch (e: unknown) {
       if (e instanceof Error) {
         throw e;
       }
-      throw new Error("error initial bootScene"); // Для неизвестных типов ошибок
+      throw new Error("error initial bootScene");
     }
   }
 

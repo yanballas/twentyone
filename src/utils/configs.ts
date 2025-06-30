@@ -2,7 +2,7 @@ import { BASE_HEIGHT, BASE_WIDTH } from "./constants";
 import type { IConfigBoot } from "./interface.ts";
 
 import backgroundRegular from "../assets/textures/backgroundRegular.webp";
-import backgroundBoot from "../assets/textures/backgroundBoot.webp";
+import backgroundMenu from "../assets/textures/menu.webp";
 
 export const appConfig = {
   width: BASE_WIDTH,
@@ -12,9 +12,9 @@ export const appConfig = {
 
 export const bootConfig: IConfigBoot = {
   assets: {
-    backgroundBoot: {
-      url: backgroundBoot,
-      name: "backgroundBoot",
+    menu: {
+      url: backgroundMenu,
+      name: "menu",
     },
     backgroundRegular: {
       url: backgroundRegular,
