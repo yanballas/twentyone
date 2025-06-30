@@ -24,9 +24,6 @@ export class App extends PIXI.Application {
 
     this.rootContainer.appendChild(this.view);
 
-    window.addEventListener("resize", () => this.resizeGame());
-    this.resizeGame();
-
     this.init();
   }
 
@@ -51,6 +48,9 @@ export class App extends PIXI.Application {
 
   protected init(): void {
     globalThis.__PIXI_APP__ = this;
+
+    window.addEventListener("resize", () => this.resizeGame());
+    this.resizeGame();
 
     try {
       this._bootScene = new BootGame(this);
